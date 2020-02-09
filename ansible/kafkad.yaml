@@ -1,0 +1,26 @@
+---
+- hosts: kafka-host
+  become: yes
+  become_user: root
+  
+  tasks:
+    - name: Install docker
+      apt:
+       name: 'docker'
+       
+    - name: Clone Git Repo for Building Docker image for Kafka
+      git:
+        repo: 'https://github.com/ArsiKhan/kafka-aws.git'
+        clone: yes
+        dest: /home/ubuntu/kafka-aws
+        
+    - name: Build Kafka Container
+      docker_image:
+        name: kafka
+        tag: 2.11_2.4.0
+        build:
+          path: /home/ubuntu/kafka-aws/docker
+          args:
+            kafka_version: 2.4.0
+            scala_version: 2.11
+        
