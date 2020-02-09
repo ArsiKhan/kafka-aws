@@ -15,6 +15,8 @@
     - name: Clone Git Repo for Building Docker image for Kafka
       git:
         repo: 'https://github.com/ArsiKhan/kafka-aws.git'
+        clone: yes
+        update: yes
         dest: /home/ubuntu/kafka-aws
         
     - name: Build Kafka Container
@@ -26,4 +28,16 @@
           args:
             kafka_version: 2.4.0
             scala_version: 2.11
-        
+     
+    - name: Pull Zookeeper Container
+      docker_image:
+        name: 'mbabineau/zookeeper-exhibitor'
+        source: pull
+     
+    - name: Create Directories for Volume mounts of Kafka and Zookeeper Containers
+      file:
+        path: "{{item}}"
+        state: directory
+      with_items:
+        - /data/kafka
+        - /data/zookeeper
