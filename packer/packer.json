@@ -1,0 +1,17 @@
+{
+    "builders": [{
+      "type": "amazon-ebs",
+      "ssh_pty": true,
+      "region": "us-east-1",
+      "instance_type": "t2.medium",
+      "source_ami": "ami-07ebfd5b3428b6f4d",
+      "ssh_username": "ubuntu",
+      "ami_name": "Kafka-Zookeeper-GoldenImg"
+    }],
+  
+    "provisioners": [{
+      "type": "ansible",
+      "host_alias": "kafka-host",
+      "playbook_file": "../ansible/kafkad.yaml"
+    }]
+}

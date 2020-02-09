@@ -1,5 +1,0 @@
-kafka-host:
-  hosts:
-    localhost
-  vars:
-    ansible_ssh_user: ubuntu
