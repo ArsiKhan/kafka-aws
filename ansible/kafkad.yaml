@@ -49,7 +49,7 @@
      
     - name: Pull Zookeeper-Exhibitor Container Image
       docker_image:
-        name: 'mbabineau/zookeeper-exhibitor'
+        name: 'mbabineau/zookeeper-exhibitor:latest'
         source: pull
      
     - name: Create Directories for Volume mounts of Kafka and Zookeeper Containers
