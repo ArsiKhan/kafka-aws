@@ -16,3 +16,45 @@ module "vpc" {
     Environment = "kafka-zk"
   }
 }
+
+module "s3_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
+  
+  bucket = "exhibitor-bucket-arsalan"
+  acl    = "private"
+  region = "us-east-1"
+  versioning = {
+    enabled = false
+  }
+
+}
+
+module "iam_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  version = "~> 2.0"
+
+  name        = "S3-Bucket-Policy"
+  path        = "/"
+  description = "S3 Bucket Policy for Kafka Zookeeper Cluster"
+
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ListObjectsInBucket",
+            "Effect": "Allow",
+            "Action": ["s3:ListBucket"],
+            "Resource": ["${module.s3_bucket.this_s3_bucket_arn}"]
+        },
+        {
+            "Sid": "AllObjectActions",
+            "Effect": "Allow",
+            "Action": "s3:*Object",
+            "Resource": ["${module.s3_bucket.this_s3_bucket_arn}/*"]
+        }
+    ]
+}
+EOF
+}
