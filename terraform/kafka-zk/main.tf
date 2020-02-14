@@ -29,32 +29,10 @@ module "s3_bucket" {
 
 }
 
-module "iam_policy" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "~> 2.0"
+module "iam_role" {
+  source = "../modules/iam-role/"
 
-  name        = "S3-Bucket-Policy"
-  path        = "/"
-  description = "S3 Bucket Policy for Kafka Zookeeper Cluster"
-
-
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "ListObjectsInBucket",
-            "Effect": "Allow",
-            "Action": ["s3:ListBucket"],
-            "Resource": ["${module.s3_bucket.this_s3_bucket_arn}"]
-        },
-        {
-            "Sid": "AllObjectActions",
-            "Effect": "Allow",
-            "Action": "s3:*Object",
-            "Resource": ["${module.s3_bucket.this_s3_bucket_arn}/*"]
-        }
-    ]
-}
-EOF
+  role_name = "kafka-zk"
+  policy_name = "kafka-zk"
+  s3_bucket_arn = "${module.s3_bucket.this_s3_bucket_arn}"
 }
