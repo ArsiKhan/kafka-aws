@@ -36,3 +36,22 @@ module "iam_role" {
   policy_name = "kafka-zk"
   s3_bucket_arn = "${module.s3_bucket.this_s3_bucket_arn}"
 }
+
+module "kafka_sg" {
+  source = "../modules/kafka-cluster-securitygroup"
+
+  my_public_ip = "${var.my_public_ip}"
+  vpc_id       = "${module.vpc.vpc_id}"
+}
+
+module "kafka_cluster" {
+  source           = "../modules/kafka-cluster/"
+
+  vpc_id           = "${module.vpc.vpc_id}"
+  kafka_sg         = ["${module.kafka_sg.kafka_sg_id}"]
+  instance_profile = "${module.iam_role.kafka_instance_profile}"
+  ami_id           = "${var.ami_id}"
+  instance_type    = "${var.instance_type}"
+  key_name         = "${var.key_name}"
+  volume_size      = "${var.volume_size}"
+}
