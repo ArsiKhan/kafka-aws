@@ -4,7 +4,7 @@ module "vpc" {
   name = "kafka-zk-vpc"
   cidr = "10.0.0.0/16"
 
-  azs             = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  azs             = ["${var.region}a", "${var.region}b", "${var.region}c"]
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
@@ -13,16 +13,16 @@ module "vpc" {
 
   tags = {
     Terraform = "true"
-    Environment = "kafka-zk"
+    Environment = "${var.environment}"
   }
 }
 
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
   
-  bucket = "exhibitor-bucket-arsalan"
+  bucket = "${var.s3_bucket_name}"
   acl    = "private"
-  region = "us-east-1"
+  region = "${var.region}"
   versioning = {
     enabled = false
   }
@@ -32,8 +32,8 @@ module "s3_bucket" {
 module "iam_role" {
   source = "../modules/iam-role/"
 
-  role_name = "kafka-zk"
-  policy_name = "kafka-zk"
+  role_name = "${var.environment}-role"
+  policy_name = "${var.environment}-policy"
   s3_bucket_arn = "${module.s3_bucket.this_s3_bucket_arn}"
 }
 

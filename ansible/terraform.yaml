@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+
+  tasks:
+    - name: Terraform Provision VPC
+      terraform:
+        project_path: ../terraform/kafka-zk/
+        force_init: true
+        targets: module.vpc
+        state: present
+    
+    - name: Terraform Deploy Remaining Infrastructure
+      terraform:
+        project_path: ../terraform/kafka-zk/
+        state: present
