@@ -32,9 +32,10 @@ module "s3_bucket" {
 module "iam_role" {
   source = "../modules/iam-role/"
 
-  role_name = "${var.environment}-role"
-  policy_name = "${var.environment}-policy"
-  s3_bucket_arn = "${module.s3_bucket.this_s3_bucket_arn}"
+  role_name             = "${var.environment}-role"
+  instance_profile_name = "${var.environment}-profile"
+  policy_name           = "${var.environment}-policy"
+  s3_bucket_arn         = "${module.s3_bucket.this_s3_bucket_arn}"
 }
 
 module "kafka_sg" {
@@ -45,7 +46,7 @@ module "kafka_sg" {
 }
 
 module "kafka_cluster" {
-  source           = "../modules/kafka-cluster/"
+  source = "../modules/kafka-cluster/"
 
   vpc_id           = "${module.vpc.vpc_id}"
   kafka_sg         = ["${module.kafka_sg.kafka_sg_id}"]

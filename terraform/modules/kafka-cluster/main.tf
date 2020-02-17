@@ -26,5 +26,10 @@ resource "aws_instance" "kafka_zk_cluster" {
       volume_size = "${var.volume_size}"
   }
    
+}
 
+resource "aws_eip" "elastic_ips" {
+    vpc                 = true
+    for_each            = aws_instance.kafka_zk_cluster
+    instance            = aws_instance.kafka_zk_cluster[each.key].id
 }

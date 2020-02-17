@@ -13,3 +13,8 @@
       terraform:
         project_path: ../terraform/kafka-zk/
         state: present
+      register: output_result
+    
+    - debug:
+        var: output_result.outputs.kafka_cluster_ips.value[0]
+
