@@ -12,7 +12,7 @@ variable "environment" {
 }
 
 variable "my_public_ip" {
-   default = ["196.246.242.219/32"]
+   default = ["196.246.240.190/32"]
 }
 
 variable "ami_id" {

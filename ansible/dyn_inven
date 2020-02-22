@@ -1,8 +1,8 @@
 # BEGIN ANSIBLE MANAGED BLOCK
 [kafka-nodes]
-35.172.34.136
-#3.223.189.120
-#3.212.96.239
+kafka-0 ansible_host=34.237.237.14
+kafka-1 ansible_host=3.93.125.102
+kafka-2 ansible_host=54.152.64.42
 
 [kafka-nodes:vars]
 ansible_ssh_user=ubuntu

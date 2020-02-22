@@ -21,9 +21,9 @@
          state: present
          block: |
           [kafka-nodes]
-          {{output_result.outputs.kafka_cluster_ips.value[0]}}
-          #{{output_result.outputs.kafka_cluster_ips.value[1]}}
-          #{{output_result.outputs.kafka_cluster_ips.value[2]}}
+          kafka-0 ansible_host={{output_result.outputs.kafka_cluster_ips.value[0]}}
+          kafka-1 ansible_host={{output_result.outputs.kafka_cluster_ips.value[1]}}
+          kafka-2 ansible_host={{output_result.outputs.kafka_cluster_ips.value[2]}}
 
           [kafka-nodes:vars]
           ansible_ssh_user=ubuntu
@@ -33,7 +33,7 @@
     - name: Refresh inventory for new hosts
       meta: refresh_inventory
  
-- hosts: kafka-nodes
+- hosts: kafka-0
   become: yes
   become_user: root
   vars:
@@ -51,10 +51,61 @@
           - 3888:3888
           - 8181:8181
         volumes:
-          - /data/zookeeper/snapshots:/opt/zookeeper/snapshots
-          - /data/zookeeper/transactions:/opt/zookeeper/transactions
+          - zookeeper-vol:/opt/zookeeper/
         env:
             HOSTNAME: "{{hostvars['localhost'].output_result.outputs.kafka_cluster_private_ips.value[0]}}"
+            S3_BUCKET: "exhibitor-bucket-arsalan"
+            S3_PREFIX: "zkClusterConfig"
+            AWS_REGION: "us-east-1"
+        restart_policy: unless-stopped
+
+- hosts: kafka-1
+  become: yes
+  become_user: root
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+    - name: Start Zookeeper Container on Host1
+      docker_container:
+        name: zookeeper
+        image: mbabineau/zookeeper-exhibitor:latest
+        detach: yes
+        published_ports:
+          - 2181:2181
+          - 2888:2888
+          - 3888:3888
+          - 8181:8181
+        volumes:
+          - zookeeper-vol:/opt/zookeeper/
+        env:
+            HOSTNAME: "{{hostvars['localhost'].output_result.outputs.kafka_cluster_private_ips.value[1]}}"
+            S3_BUCKET: "exhibitor-bucket-arsalan"
+            S3_PREFIX: "zkClusterConfig"
+            AWS_REGION: "us-east-1"
+        restart_policy: unless-stopped
+
+- hosts: kafka-2
+  become: yes
+  become_user: root
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+    - name: Start Zookeeper Container on Host1
+      docker_container:
+        name: zookeeper
+        image: mbabineau/zookeeper-exhibitor:latest
+        detach: yes
+        published_ports:
+          - 2181:2181
+          - 2888:2888
+          - 3888:3888
+          - 8181:8181
+        volumes:
+          - zookeeper-vol:/opt/zookeeper/
+        env:
+            HOSTNAME: "{{hostvars['localhost'].output_result.outputs.kafka_cluster_private_ips.value[2]}}"
             S3_BUCKET: "exhibitor-bucket-arsalan"
             S3_PREFIX: "zkClusterConfig"
             AWS_REGION: "us-east-1"

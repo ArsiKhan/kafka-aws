@@ -52,11 +52,3 @@
         name: 'mbabineau/zookeeper-exhibitor:latest'
         source: pull
      
-    - name: Create Directories for Volume mounts of Kafka and Zookeeper Containers
-      file:
-        path: "{{item}}"
-        state: directory
-      with_items:
-        - /data/kafka
-        - /data/zookeeper/transactions
-        - /data/zookeeper/snapshots
