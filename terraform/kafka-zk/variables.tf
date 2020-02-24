@@ -12,11 +12,11 @@ variable "environment" {
 }
 
 variable "my_public_ip" {
-   default = ["196.246.240.190/32"]
+   default = ["117.20.31.76/32"]
 }
 
 variable "ami_id" {
-    default = "ami-0452c13d63e5e3449"
+    default = "ami-06786994b42ca4a98"
 }
 
 variable "instance_type" {

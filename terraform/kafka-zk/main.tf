@@ -23,9 +23,12 @@ module "s3_bucket" {
   bucket = "${var.s3_bucket_name}"
   acl    = "private"
   region = "${var.region}"
+
   versioning = {
     enabled = false
   }
+  
+  force_destroy = true
 
 }
 

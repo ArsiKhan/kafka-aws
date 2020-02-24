@@ -1,5 +1,6 @@
 ---
 - hosts: localhost
+  gather_facts: no
 
   tasks:
     - name: Terraform Provision VPC
@@ -12,35 +13,32 @@
     - name: Terraform Deploy Remaining Infrastructure
       terraform:
         project_path: ../terraform/kafka-zk/
-        state: present
+        state: absent
       register: output_result
 
     - name: Copy contents to local
       blockinfile:
          path: dyn_inven
-         state: present
+         state: absent
          block: |
           [kafka-nodes]
-          kafka-0 ansible_host={{output_result.outputs.kafka_cluster_ips.value[0]}}
-          kafka-1 ansible_host={{output_result.outputs.kafka_cluster_ips.value[1]}}
-          kafka-2 ansible_host={{output_result.outputs.kafka_cluster_ips.value[2]}}
+          kafka-0 ansible_host={{output_result.outputs.kafka_cluster_ips.value[0]}} private_ip={{output_result.outputs.kafka_cluster_private_ips.value[0]}} broker_id=0
+          kafka-1 ansible_host={{output_result.outputs.kafka_cluster_ips.value[1]}} private_ip={{output_result.outputs.kafka_cluster_private_ips.value[1]}} broker_id=1         
+          kafka-2 ansible_host={{output_result.outputs.kafka_cluster_ips.value[2]}} private_ip={{output_result.outputs.kafka_cluster_private_ips.value[2]}} broker_id=2
 
           [kafka-nodes:vars]
           ansible_ssh_user=ubuntu
           ansible_ssh_private_key_file=./kafka_zk_clusterkey.pem
           ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+          zookeeper_connect={{output_result.outputs.kafka_cluster_private_ips.value[0]}}:2181,{{output_result.outputs.kafka_cluster_private_ips.value[1]}}:2181,{{output_result.outputs.kafka_cluster_private_ips.value[2]}}:2181
     
     - name: Refresh inventory for new hosts
       meta: refresh_inventory
  
-- hosts: kafka-0
-  become: yes
-  become_user: root
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
+- hosts: [kafka-nodes]
 
   tasks:
-    - name: Start Zookeeper Container on Host1
+    - name: Start Zookeeper Container on Hosts
       docker_container:
         name: zookeeper
         image: mbabineau/zookeeper-exhibitor:latest
@@ -53,63 +51,24 @@
         volumes:
           - zookeeper-vol:/opt/zookeeper/
         env:
-            HOSTNAME: "{{hostvars['localhost'].output_result.outputs.kafka_cluster_private_ips.value[0]}}"
+            HOSTNAME: "{{private_ip}}"
             S3_BUCKET: "exhibitor-bucket-arsalan"
             S3_PREFIX: "zkClusterConfig"
             AWS_REGION: "us-east-1"
         restart_policy: unless-stopped
 
-- hosts: kafka-1
-  become: yes
-  become_user: root
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-
-  tasks:
-    - name: Start Zookeeper Container on Host1
+  
+    - name: Start Kafka Container on Hosts
       docker_container:
-        name: zookeeper
-        image: mbabineau/zookeeper-exhibitor:latest
+        name: kafka
+        image: kafka:2.11_2.4.0
         detach: yes
         published_ports:
-          - 2181:2181
-          - 2888:2888
-          - 3888:3888
-          - 8181:8181
+          - 9092:9092
         volumes:
-          - zookeeper-vol:/opt/zookeeper/
+          - kafka-vol:/kafka
         env:
-            HOSTNAME: "{{hostvars['localhost'].output_result.outputs.kafka_cluster_private_ips.value[1]}}"
-            S3_BUCKET: "exhibitor-bucket-arsalan"
-            S3_PREFIX: "zkClusterConfig"
-            AWS_REGION: "us-east-1"
+            KAFKA_ADVERTISED_HOST_NAME: "{{private_ip}}"
+            KAFKA_BROKER_ID: "{{broker_id | quote}}"
+            KAFKA_ZOOKEEPER_CONNECT: "{{zookeeper_connect}}"
         restart_policy: unless-stopped
-
-- hosts: kafka-2
-  become: yes
-  become_user: root
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-
-  tasks:
-    - name: Start Zookeeper Container on Host1
-      docker_container:
-        name: zookeeper
-        image: mbabineau/zookeeper-exhibitor:latest
-        detach: yes
-        published_ports:
-          - 2181:2181
-          - 2888:2888
-          - 3888:3888
-          - 8181:8181
-        volumes:
-          - zookeeper-vol:/opt/zookeeper/
-        env:
-            HOSTNAME: "{{hostvars['localhost'].output_result.outputs.kafka_cluster_private_ips.value[2]}}"
-            S3_BUCKET: "exhibitor-bucket-arsalan"
-            S3_PREFIX: "zkClusterConfig"
-            AWS_REGION: "us-east-1"
-        restart_policy: unless-stopped
-
-        
-    

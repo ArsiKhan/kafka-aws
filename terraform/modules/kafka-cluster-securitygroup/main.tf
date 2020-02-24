@@ -74,14 +74,3 @@ resource "aws_security_group_rule" "allow_ssh" {
 
   security_group_id = "${aws_security_group.kafka_cluster_sg.id}"
 }
-
-
-resource "aws_security_group_rule" "allow_ssh_10p" {
-  type        = "ingress"
-  from_port   = "22"
-  to_port     = "22"
-  protocol    = "tcp"
-  cidr_blocks = ["117.20.31.76/32"]
-
-  security_group_id = "${aws_security_group.kafka_cluster_sg.id}"
-}

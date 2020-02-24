@@ -6,7 +6,7 @@
       "instance_type": "t2.medium",
       "source_ami": "ami-07ebfd5b3428b6f4d",
       "ssh_username": "ubuntu",
-      "ami_name": "Kafka-Zookeeper-GoldenImg"
+      "ami_name": "Kafka-Zookeeper-GoldenImg-3"
     }],
   
     "provisioners": [{
