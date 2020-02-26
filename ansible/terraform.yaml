@@ -1,6 +1,8 @@
 ---
 - hosts: localhost
   gather_facts: no
+  vars_files:
+    - ./vars/external_vars.yml
 
   tasks:
     - name: Terraform Provision VPC
@@ -9,11 +11,24 @@
         force_init: true
         targets: module.vpc
         state: present
+        variables:
+          region: "{{region}}"
+          environment: "{{environment_name}}"
+
     
     - name: Terraform Deploy Remaining Infrastructure
       terraform:
         project_path: ../terraform/kafka-zk/
         state: absent
+        variables:
+          region: "{{region}}"
+          s3_bucket_name: "{{s3_bucket_name}}"
+          environment: "{{environment_name}}"
+          my_public_ip: "{{my_public_ip}}"
+          ami_id: "{{ami_id}}"
+          instance_type: "{{instance_type}}"
+          key_name: "{{key_name}}"
+          volume_size: "{{volume_size}}"
       register: output_result
 
     - name: Copy contents to local
@@ -36,6 +51,8 @@
       meta: refresh_inventory
  
 - hosts: [kafka-nodes]
+  vars_files:
+    - ./vars/external_vars.yml
 
   tasks:
     - name: Start Zookeeper Container on Hosts
@@ -52,16 +69,16 @@
           - zookeeper-vol:/opt/zookeeper/
         env:
             HOSTNAME: "{{private_ip}}"
-            S3_BUCKET: "exhibitor-bucket-arsalan"
+            S3_BUCKET: "{{s3_bucket_name}}"
             S3_PREFIX: "zkClusterConfig"
-            AWS_REGION: "us-east-1"
+            AWS_REGION: "{{region}}"
         restart_policy: unless-stopped
 
   
     - name: Start Kafka Container on Hosts
       docker_container:
         name: kafka
-        image: kafka:2.11_2.4.0
+        image: kafka:image
         detach: yes
         published_ports:
           - 9092:9092

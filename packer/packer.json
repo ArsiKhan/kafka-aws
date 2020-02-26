@@ -2,16 +2,25 @@
     "builders": [{
       "type": "amazon-ebs",
       "ssh_pty": true,
-      "region": "us-east-1",
+      "region": "{{user `aws_region`}}",
       "instance_type": "t2.medium",
-      "source_ami": "ami-07ebfd5b3428b6f4d",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*",
+          "root-device-type": "ebs"
+        },
+        "owners": ["099720109477"],
+        "most_recent": true        
+      },
       "ssh_username": "ubuntu",
-      "ami_name": "Kafka-Zookeeper-GoldenImg-3"
+      "ami_name": "{{user `ami_name`}}_{{user `scala_version`}}_{{user `kafka_version`}}"
     }],
   
     "provisioners": [{
       "type": "ansible",
       "host_alias": "kafka-host",
-      "playbook_file": "../ansible/kafkad.yaml"
+      "playbook_file": "../ansible/kafkad.yaml",
+      "ansible_env_vars": [ "KAFKA_VERSION={{user `kafka_version`}}", "SCALA_VERSION={{user `scala_version`}}" ]
     }]
 }

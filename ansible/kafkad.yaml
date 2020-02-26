@@ -47,12 +47,12 @@
     - name: Build Kafka Container Image
       docker_image:
         name: kafka
-        tag: 2.11_2.4.0
+        tag: image
         build:
           path: /home/ubuntu/kafka-aws/docker
           args:
-            kafka_version: 2.4.0
-            scala_version: 2.11
+            kafka_version: "{{ lookup('env','KAFKA_VERSION') }}"
+            scala_version: "{{ lookup('env','SCALA_VERSION') }}"
      
     - name: Pull Zookeeper-Exhibitor Container Image
       docker_image:
