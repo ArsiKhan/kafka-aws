@@ -57,5 +57,5 @@ module "kafka_cluster" {
   ami_id           = "${var.ami_id}"
   instance_type    = "${var.instance_type}"
   key_name         = "${var.key_name}"
-  volume_size      = "${var.volume_size}"
+  volume_size      = "${var.root_volume_size}"
 }

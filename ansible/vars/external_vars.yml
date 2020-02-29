@@ -1,9 +1,0 @@
----
-region: "us-west-2"
-s3_bucket_name: "exhibitor-bucket-arsalan"
-environment_name: "kafka-zk"
-my_public_ip: "1.1.1.1/1"
-ami_id: "ami-0f7d1218068eef0e2"
-instance_type: "t2.medium"
-key_name: "kafka-zookeeper-cluster"
-volume_size: "20"

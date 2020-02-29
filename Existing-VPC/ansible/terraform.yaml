@@ -1,0 +1,91 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ./vars/external_vars.yml
+
+  tasks:
+    
+    - name: Terraform Deploy/Destroy Infrastructure
+      terraform:
+        project_path: ../terraform/kafka-zk/
+        force_init: true
+        state: present
+        variables:
+          region: "{{region}}"
+          vpc_id: "{{vpc_id}}"
+          subnet_id_0: "{{subnet_id_0}}"
+          subnet_id_1: "{{subnet_id_1}}"
+          subnet_id_2: "{{subnet_id_2}}"
+          s3_bucket_name: "{{s3_bucket_name}}"
+          environment: "{{environment_name}}"
+          my_public_ip: "{{my_public_ip}}"
+          ami_id: "{{ami_id}}"
+          instance_type: "{{instance_type}}"
+          key_name: "{{key_name}}"
+          root_volume_size: "{{root_volume_size}}"
+      register: output_result
+
+    - name: Copy contents to local
+      blockinfile:
+         path: dyn_inven
+         state: present
+         block: |
+          [kafka-nodes]
+          kafka-0 ansible_host={{output_result.outputs.kafka_cluster_ips.value[0]}} private_ip={{output_result.outputs.kafka_cluster_private_ips.value[0]}} broker_id=0
+          kafka-1 ansible_host={{output_result.outputs.kafka_cluster_ips.value[1]}} private_ip={{output_result.outputs.kafka_cluster_private_ips.value[1]}} broker_id=1         
+          kafka-2 ansible_host={{output_result.outputs.kafka_cluster_ips.value[2]}} private_ip={{output_result.outputs.kafka_cluster_private_ips.value[2]}} broker_id=2
+
+          [kafka-nodes:vars]
+          ansible_ssh_user=ubuntu
+          ansible_ssh_private_key_file=./kafka_zk_clusterkey.pem
+          ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+          zookeeper_connect={{output_result.outputs.kafka_cluster_private_ips.value[0]}}:2181,{{output_result.outputs.kafka_cluster_private_ips.value[1]}}:2181,{{output_result.outputs.kafka_cluster_private_ips.value[2]}}:2181
+    
+    - name: Refresh inventory for new hosts
+      meta: refresh_inventory
+
+    - name: sleep for 300 seconds for ssh to become available and continue with play
+      wait_for:
+        timeout: 300
+    
+ 
+- hosts: [kafka-nodes]
+  vars_files:
+    - ./vars/external_vars.yml
+
+  tasks:
+    - name: Start Zookeeper Container on Hosts
+      docker_container:
+        name: zookeeper
+        image: mbabineau/zookeeper-exhibitor:latest
+        detach: yes
+        published_ports:
+          - 2181:2181
+          - 2888:2888
+          - 3888:3888
+          - 8181:8181
+        volumes:
+          - zookeeper-vol:/opt/zookeeper/
+        env:
+            HOSTNAME: "{{private_ip}}"
+            S3_BUCKET: "{{s3_bucket_name}}"
+            S3_PREFIX: "zkClusterConfig"
+            AWS_REGION: "{{region}}"
+        restart_policy: unless-stopped
+
+  
+    - name: Start Kafka Container on Hosts
+      docker_container:
+        name: kafka
+        image: kafka:image
+        detach: yes
+        published_ports:
+          - 9092:9092
+        volumes:
+          - kafka-vol:/kafka
+        env:
+            KAFKA_ADVERTISED_HOST_NAME: "{{private_ip}}"
+            KAFKA_BROKER_ID: "{{broker_id | quote}}"
+            KAFKA_ZOOKEEPER_CONNECT: "{{zookeeper_connect}}"
+        restart_policy: unless-stopped

@@ -32,7 +32,7 @@ variable "key_name" {
     description = "Private Key File name for the SSH Access to the Cluster"
 }
 
-variable "volume_size" {
+variable "root_volume_size" {
     default     = "20"
     description = "Volume Size of the EBS attached to the Cluster"  
 }

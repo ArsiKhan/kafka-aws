@@ -1,0 +1,13 @@
+---
+region: "us-east-1"
+vpc_id: "vpc-0d01a2e36f06e5f13"
+subnet_id_0: "subnet-03e8b4e52c8d256c7"
+subnet_id_1: "subnet-093ab5f1e4225354b"
+subnet_id_2: "subnet-05e3604eba4cdade9"
+s3_bucket_name: "exhibitor-bucket-arsalan"
+environment_name: "kafka-zk"
+my_public_ip: "196.246.132.42/32"
+ami_id: "ami-0ae34d0e31c23f8fe"
+instance_type: "t2.medium"
+key_name: "kafka-zk-key"
+root_volume_size: "10"

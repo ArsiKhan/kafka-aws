@@ -13,10 +13,19 @@
         "owners": ["099720109477"],
         "most_recent": true        
       },
+      
       "ssh_username": "ubuntu",
-      "ami_name": "{{user `ami_name`}}_{{user `scala_version`}}_{{user `kafka_version`}}"
+      "ami_name": "{{user `ami_name`}}_{{user `scala_version`}}_{{user `kafka_version`}}",
+      "launch_block_device_mappings": [
+        {
+          "device_name": "/dev/sdb",
+          "volume_size": "{{user `kafka_zk_volume_size`}}",
+          "volume_type": "{{user `volume_type`}}",
+          "delete_on_termination": true
+        }
+      ]
     }],
-  
+
     "provisioners": [{
       "type": "ansible",
       "host_alias": "kafka-host",

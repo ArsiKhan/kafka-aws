@@ -1,0 +1,9 @@
+---
+region: "us-east-1"
+s3_bucket_name: "exhibitor-bucket-arsalan"
+environment_name: "kafka-zk"
+my_public_ip: "196.246.132.42/32"
+ami_id: "ami-07d7740c3c54dff4b"
+instance_type: "t2.medium"
+key_name: "kafka-zk-key"
+root_volume_size: "10"

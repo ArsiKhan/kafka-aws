@@ -28,13 +28,13 @@
           ami_id: "{{ami_id}}"
           instance_type: "{{instance_type}}"
           key_name: "{{key_name}}"
-          volume_size: "{{volume_size}}"
+          root_volume_size: "{{root_volume_size}}"
       register: output_result
 
     - name: Copy contents to local
       blockinfile:
          path: dyn_inven
-         state: absent
+         state: present
          block: |
           [kafka-nodes]
           kafka-0 ansible_host={{output_result.outputs.kafka_cluster_ips.value[0]}} private_ip={{output_result.outputs.kafka_cluster_private_ips.value[0]}} broker_id=0
@@ -49,7 +49,12 @@
     
     - name: Refresh inventory for new hosts
       meta: refresh_inventory
- 
+
+    - name: sleep for 300 seconds for ssh to become available and continue with play
+      wait_for:
+        timeout: 300
+        
+        
 - hosts: [kafka-nodes]
   vars_files:
     - ./vars/external_vars.yml

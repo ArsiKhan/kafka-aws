@@ -15,7 +15,7 @@ At this moment these manifests can only work in AWS regions which support 3 or m
 * Terraform v0.12.20 or above
 * AWS account with an IAM user having appropriate permissions
 
-Inst alling Ansible 2.8 on a Ubuntu 18.04 machine
+Installing Ansible 2.8 on a Ubuntu 18.04 machine
 ```
 sudo apt update
 sudo apt install software-properties-common
@@ -35,17 +35,17 @@ Clone the repository on your local machine with all the pre-requisites installed
 The easiest way to use AWS credentials is creating a profile and exporting the profile name as an environment variable.
 
 ```
-arsalan@LINFRA-ARSALAN:~/Office/Repos/mine/kafka-aws$ aws configure --profile kafka
+$ aws configure --profile <name of your profile>
 AWS Access Key ID [None]: *****************
 AWS Secret Access Key [None]: *******************
 Default region name [None]: us-east-1
 Default output format [None]:
 
-export AWS_PROFILE=kafka
+$ export AWS_PROFILE=<name of your profile>
 ```
 Browse to the directory with packer manifests
 ```
-cd packer
+$ cd packer
 ```
 
 
@@ -62,16 +62,16 @@ Open the variables.json file and add the variables for the version and region in
 Run the following command for creating an AMI with the appropriate version of Kafka and Zookeeper installed
 
 ```
-packer build -var-file=variables.json packer.json
+$ packer build -var-file=variables.json packer.json
 ```
 Note the AMI-ID as this would be required in the next step.
 ## Provisioning the Cluster
 
-Open the external_var.yml
+Open the external_var.yml.
 ```
-nano ../ansible/vars/external_vars.yml
+$ nano ../ansible/vars/external_vars.yml
 ```
-Add the variables for provisioning the cluster
+Add the variables for provisioning the cluster. Replace the ami_id with the one fetched in the previous id.
 ```
 region: "us-west-2"
 s3_bucket_name: "exhibitor-bucket-arsalan"
@@ -85,9 +85,10 @@ volume_size: "20"
 
 Browse to the ansible directory and run the ansible playbook command
 ```
-cd ../ansible
-ansible-playbook -i dyn_inven terraform.yaml
+$ cd ../ansible
+$ ansible-playbook -i dyn_inven terraform.yaml
 ```
+
 ### Break down into end to end tests
 
 Explain what these tests test and why
