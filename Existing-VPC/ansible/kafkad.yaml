@@ -51,17 +51,17 @@
        
     - name: Clone Git Repo for Building Docker image for Kafka
       git:
-        repo: 'https://github.com/ArsiKhan/kafka-aws.git'
+        repo: 'https://github.com/wurstmeister/kafka-docker.git'
         clone: yes
         update: yes
-        dest: /home/ubuntu/kafka-aws
+        dest: /home/ubuntu/kafka-docker
         
     - name: Build Kafka Container Image
       docker_image:
         name: kafka
         tag: image
         build:
-          path: /home/ubuntu/kafka-aws/docker
+          path: /home/ubuntu/kafka-docker/
           args:
             kafka_version: "{{ lookup('env','KAFKA_VERSION') }}"
             scala_version: "{{ lookup('env','SCALA_VERSION') }}"

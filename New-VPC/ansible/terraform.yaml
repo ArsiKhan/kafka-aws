@@ -19,7 +19,7 @@
     - name: Terraform Deploy Remaining Infrastructure
       terraform:
         project_path: ../terraform/kafka-zk/
-        state: absent
+        state: present
         variables:
           region: "{{region}}"
           s3_bucket_name: "{{s3_bucket_name}}"
@@ -30,6 +30,9 @@
           key_name: "{{key_name}}"
           root_volume_size: "{{root_volume_size}}"
       register: output_result
+
+    - debug:
+        msg: "{{output_result.stdout}}"
 
     - name: Copy contents to local
       blockinfile:
@@ -77,6 +80,7 @@
             S3_BUCKET: "{{s3_bucket_name}}"
             S3_PREFIX: "zkClusterConfig"
             AWS_REGION: "{{region}}"
+            ZK_PASSWORD: "{{zk_password}}"            
         restart_policy: unless-stopped
 
   
