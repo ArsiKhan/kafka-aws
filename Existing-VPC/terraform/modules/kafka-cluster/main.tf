@@ -1,12 +1,12 @@
 
 resource "aws_instance" "kafka_zk_cluster" {
-  ami                    = "${var.ami_id}"
-  instance_type          = "${var.instance_type}"
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
   for_each               = toset(var.subnet_ids)
   subnet_id              = each.key
-  key_name               = "${var.key_name}"
-  iam_instance_profile   = "${var.instance_profile}"
-  vpc_security_group_ids = "${var.kafka_sg}"
+  key_name               = var.key_name
+  iam_instance_profile   = var.instance_profile
+  vpc_security_group_ids = var.kafka_sg
 
   associate_public_ip_address = true
 
@@ -15,7 +15,7 @@ resource "aws_instance" "kafka_zk_cluster" {
   }
 
   root_block_device {
-      volume_size = "${var.volume_size}"
+      volume_size = var.volume_size
   }
    
 }

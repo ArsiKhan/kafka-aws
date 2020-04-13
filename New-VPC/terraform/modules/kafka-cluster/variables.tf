@@ -1,9 +1,13 @@
-variable "vpc_id" {
-    description = "VPC id for the Kafka-Zookeeper cluster"
+variable "subnet_ids" {
+    description = "List of Subnets ids for the Kafka-Zookeeper cluster"
 }
 
 variable "instance_profile" {
     description = "Instance profile for access to S3 bucket"
+}
+
+variable "instance_count" {
+    description = "Number of Kafka Instances in the Cluster"
 }
 
 variable "ami_id" {

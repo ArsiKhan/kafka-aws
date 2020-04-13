@@ -1,20 +1,45 @@
 
 variable "region" {
-    default = "us-west-2"
+    default = "us-west-1"
 }
 
 variable "s3_bucket_name" {
-    default = "exhibitor-bucket-arsalan"
+    default = "exhibitor-bucket"
 }
 
 variable "environment" {
-    default     = "us-west-2"
+    default     = "us-east-1"
     description = "Name of Environment to append"
 }
 
+variable "vpc_cidr" {
+    default  = "10.0.0.0/16"
+    description = "Cidr block for VPC"
+}
+
+variable "subnet_0" {
+    default = "10.0.101.0/24"
+    description = "Cidr block for first subnet"
+}
+
+variable "subnet_1" {
+    default = "10.0.102.0/24"
+    description = "Cidr block for second subnet"
+}
+
+variable "subnet_2" {
+    default     = "10.0.103.0/24"
+    description = "Cidr block for third subnet"
+}
+
 variable "my_public_ip" {
-   default     = ["117.20.31.76/32"]
+   default     = "117.20.31.76/32"
    description = "Public Ip for adding in the security Groups"
+}
+
+variable "instance_count" {
+    default     = 3
+    description = "Number of Kafka Instances in the Cluster"
 }
 
 variable "ami_id" {
