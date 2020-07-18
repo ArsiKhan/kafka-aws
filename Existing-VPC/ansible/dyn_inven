@@ -1,0 +1,18 @@
+[kafka-nodes]
+# BEGIN Kafka-Instance0
+kafka-0 ansible_host=54.147.191.173 private_ip=172.16.10.122 broker_id=0
+# END Kafka-Instance0
+# BEGIN Kafka-Instance1
+kafka-1 ansible_host=52.71.127.115 private_ip=172.16.20.200 broker_id=1
+# END Kafka-Instance1
+# BEGIN Kafka-Instance2
+kafka-2 ansible_host=54.165.203.238 private_ip=172.16.30.128 broker_id=2
+# END Kafka-Instance2
+# BEGIN ANSIBLE MANAGED BLOCK FOR KAFKA-NODES VARIABLES
+[kafka-nodes:vars]
+ansible_ssh_user=ubuntu
+ansible_ssh_private_key_file=./kafka_zk_clusterkey.pem
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+real_bucket_name=exhibitor-bucket-21639ysf 
+zookeeper_connect=172.16.10.122:2181,172.16.20.200:2181,172.16.30.128:2181
+# END ANSIBLE MANAGED BLOCK FOR KAFKA-NODES VARIABLES

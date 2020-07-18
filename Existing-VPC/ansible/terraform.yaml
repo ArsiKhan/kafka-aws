@@ -18,6 +18,7 @@
           subnet_id_1: "{{subnet_id_1}}"
           subnet_id_2: "{{subnet_id_2}}"
           s3_bucket_name: "{{s3_bucket_name}}"
+          instance_count: "{{instance_count}}"
           environment: "{{environment_name}}"
           my_public_ip: "{{my_public_ip}}"
           ami_id: "{{ami_id}}"
@@ -28,29 +29,62 @@
 
     - debug:
         msg: "{{output_result.stdout}}"
+    
+    - set_fact:
+        private_ips: "{{output_result.outputs.private_ips.value}}"
+        public_ips: "{{output_result.outputs.public_ips.value}}"
+        real_bucket_name: "{{output_result.outputs.exhibitor_s3_bucket.value}}"
+  
+    - set_fact:
+        zookeeper_connect: "{{private_ips | map('regex_replace', '$', ':2181') | list}}"
+
+        
+    - name: Add the first line of our inventory
+      lineinfile:
+         path: dyn_inven
+         insertbefore: BOF
+         line: "[kafka-nodes]"
 
     - name: Copy contents to local
       blockinfile:
-         path: dyn_inven
-         state: present
-         block: |
-          [kafka-nodes]
-          kafka-0 ansible_host={{output_result.outputs.kafka_cluster_ips.value[0]}} private_ip={{output_result.outputs.kafka_cluster_private_ips.value[0]}} broker_id=0
-          kafka-1 ansible_host={{output_result.outputs.kafka_cluster_ips.value[1]}} private_ip={{output_result.outputs.kafka_cluster_private_ips.value[1]}} broker_id=1         
-          kafka-2 ansible_host={{output_result.outputs.kafka_cluster_ips.value[2]}} private_ip={{output_result.outputs.kafka_cluster_private_ips.value[2]}} broker_id=2
+       path: dyn_inven
+       state: present
+       insertafter: 'Kafka-Instance*'
+       block: |
+        kafka-{{my_idx}} ansible_host={{item[0]}} private_ip={{item[1]}} broker_id={{my_idx}}
+       marker: "# {mark} Kafka-Instance{{my_idx}}"
+      with_together:
+         - "{{public_ips}}"
+         - "{{private_ips}}"
+      loop_control:
+           index_var: my_idx
 
-          [kafka-nodes:vars]
-          ansible_ssh_user=ubuntu
-          ansible_ssh_private_key_file=./kafka_zk_clusterkey.pem
-          ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-          zookeeper_connect={{output_result.outputs.kafka_cluster_private_ips.value[0]}}:2181,{{output_result.outputs.kafka_cluster_private_ips.value[1]}}:2181,{{output_result.outputs.kafka_cluster_private_ips.value[2]}}:2181
-    
+    - name: Additional Info in the inventory
+      blockinfile:
+          path: dyn_inven
+          marker: "# {mark} ANSIBLE MANAGED BLOCK FOR KAFKA-NODES VARIABLES"
+          state: present
+          block: |
+            [kafka-nodes:vars]
+            ansible_ssh_user=ubuntu
+            ansible_ssh_private_key_file=./kafka_zk_clusterkey.pem
+            ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+            real_bucket_name={{real_bucket_name}} 
+            zookeeper_connect=
+            
+    - name: Adding Zookeeper_Connect Info in the Inventory
+      lineinfile:
+          dest: dyn_inven
+          regexp: '^zookeeper_connect='
+          line: "zookeeper_connect={{zookeeper_connect | join(',')}}"
+
     - name: Refresh inventory for new hosts
       meta: refresh_inventory
 
     - name: sleep for 300 seconds for ssh to become available and continue with play
       wait_for:
         timeout: 300
+
     
  
 - hosts: [kafka-nodes]
@@ -58,38 +92,4 @@
     - ./vars/external_vars.yml
 
   tasks:
-    - name: Start Zookeeper Container on Hosts
-      docker_container:
-        name: zookeeper
-        image: mbabineau/zookeeper-exhibitor:latest
-        detach: yes
-        published_ports:
-          - 2181:2181
-          - 2888:2888
-          - 3888:3888
-          - 8181:8181
-        volumes:
-          - zookeeper-vol:/opt/zookeeper/
-        env:
-            HOSTNAME: "{{private_ip}}"
-            S3_BUCKET: "{{s3_bucket_name}}"
-            S3_PREFIX: "zkClusterConfig"
-            AWS_REGION: "{{region}}"
-            ZK_PASSWORD: "{{zk_password}}"
-        restart_policy: unless-stopped
-
-  
-    - name: Start Kafka Container on Hosts
-      docker_container:
-        name: kafka
-        image: kafka:image
-        detach: yes
-        published_ports:
-          - 9092:9092
-        volumes:
-          - kafka-vol:/kafka
-        env:
-            KAFKA_ADVERTISED_HOST_NAME: "{{private_ip}}"
-            KAFKA_BROKER_ID: "{{broker_id | quote}}"
-            KAFKA_ZOOKEEPER_CONNECT: "{{zookeeper_connect}}"
-        restart_policy: unless-stopped
+    - include_tasks:  ../../tasks/start.yaml

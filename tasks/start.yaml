@@ -13,7 +13,7 @@
       - zookeeper-vol:/opt/zookeeper/
     env:
         HOSTNAME: "{{private_ip}}"
-        S3_BUCKET: "{{s3_bucket_name}}"
+        S3_BUCKET: "{{real_bucket_name}}"
         S3_PREFIX: "zkClusterConfig"
         AWS_REGION: "{{region}}"
         ZK_PASSWORD: "{{zk_password}}"
