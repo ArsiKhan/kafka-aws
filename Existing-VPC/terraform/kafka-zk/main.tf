@@ -39,12 +39,12 @@ module "kafka_sg" {
 module "kafka_cluster" {
   source = "../../../modules/kafka-cluster/"
 
-  vpc_id           = "${var.vpc_id}"
-  subnet_ids       = ["${var.subnet_id_0}","${var.subnet_id_1}","${var.subnet_id_2}"]  
-  kafka_sg         = ["${module.kafka_sg.kafka_sg_id}"]
-  instance_profile = "${module.iam_role.kafka_instance_profile}"
-  ami_id           = "${var.ami_id}"
-  instance_type    = "${var.instance_type}"
-  key_name         = "${var.key_name}"
-  volume_size      = "${var.root_volume_size}"
+  subnet_ids       = [var.subnet_id_0, var.subnet_id_1, var.subnet_id_2]  
+  kafka_sg         = [module.kafka_sg.kafka_sg_id]
+  instance_profile = module.iam_role.kafka_instance_profile
+  instance_count   = var.instance_count
+  ami_id           = var.ami_id
+  instance_type    = var.instance_type
+  key_name         = var.key_name
+  volume_size      = var.root_volume_size
 }

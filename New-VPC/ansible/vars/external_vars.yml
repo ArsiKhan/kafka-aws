@@ -1,6 +1,6 @@
 ---
 region: "us-east-1"
-s3_bucket_name: "exhibitor-bucket-aklfdhgikdh"
+s3_bucket_name: "exhibitor-bucket-sdafsdgsdga"
 environment_name: "kafka-zk"
 zk_password: "password"
 my_public_ip: "1.1.1.1/32"

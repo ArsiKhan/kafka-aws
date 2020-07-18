@@ -33,8 +33,13 @@ variable "my_public_ip" {
    description = "Public Ip for adding in the security Groups"
 }
 
+variable "instance_count" {
+    default     = 1
+    description = "Number of Kafka Instances in the Cluster"
+}
+
 variable "ami_id" {
-    default     = "ami-0a887e401f7654935"
+    default     = "ami-0931d12fefe6f20a4"
     description = "Base Image ID for the Cluster"
 }
 
@@ -44,7 +49,7 @@ variable "instance_type" {
 }
 
 variable "key_name" {
-    default     = "kafka-zookeeper-cluster"
+    default     = "kafka-zk-key"
     description = "Private Key File name for the SSH Access to the Cluster"
 }
 
