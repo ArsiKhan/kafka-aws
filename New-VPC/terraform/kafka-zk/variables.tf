@@ -43,7 +43,7 @@ variable "instance_count" {
 }
 
 variable "ami_id" {
-    default     = "ami-0d68af8d1af1cae8c"
+    default     = "ami-09854928f5c932aab"
     description = "Base Image ID for the Cluster"
 }
 

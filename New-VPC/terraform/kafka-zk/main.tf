@@ -42,7 +42,7 @@ module "s3_bucket" {
 }
 
 module "iam_role" {
-  source = "../modules/iam-role/"
+  source = "../../../modules/iam-role/"
 
   role_name             = "${var.environment}-role"
   instance_profile_name = "${var.environment}-profile"
@@ -51,14 +51,14 @@ module "iam_role" {
 }
 
 module "kafka_sg" {
-  source = "../modules/kafka-cluster-securitygroup"
+  source = "../../../modules/kafka-cluster-securitygroup"
 
   my_public_ip = var.my_public_ip
   vpc_id       = module.vpc.vpc_id
 }
 
 module "kafka_cluster" {
-  source = "../modules/kafka-cluster/"
+  source = "../../../modules/kafka-cluster/"
 
   subnet_ids       = module.vpc.public_subnets
   kafka_sg         = [module.kafka_sg.kafka_sg_id]
