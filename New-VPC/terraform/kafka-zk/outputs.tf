@@ -10,5 +10,5 @@ output "vpc_name" {
 }
 
 output "exhibitor_s3_bucket" {
-  value = "${var.s3_bucket_name}"
+  value = module.s3_bucket.this_s3_bucket_id
 }

@@ -1,6 +1,6 @@
 
 variable "region" {
-    default = "us-west-1"
+    default = "us-east-1"
 }
 
 variable "s3_bucket_name" {
@@ -38,7 +38,7 @@ variable "my_public_ip" {
 }
 
 variable "instance_count" {
-    default     = 3
+    default     = 1
     description = "Number of Kafka Instances in the Cluster"
 }
 
