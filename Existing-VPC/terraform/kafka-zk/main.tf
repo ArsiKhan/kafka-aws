@@ -1,9 +1,15 @@
+resource "random_string" "random" {
+  length  = 8
+  special = false
+  upper   = false
+}
+
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
   
-  bucket = "${var.s3_bucket_name}"
+  bucket = "${var.s3_bucket_name}-${random_string.random.result}"
   acl    = "private"
-  region = "${var.region}"
+  region = var.region
 
   versioning = {
     enabled = false
@@ -14,7 +20,7 @@ module "s3_bucket" {
 }
 
 module "iam_role" {
-  source = "../modules/iam-role/"
+  source = "../../../modules/iam-role/"
 
   role_name             = "${var.environment}-role"
   instance_profile_name = "${var.environment}-profile"
@@ -23,7 +29,7 @@ module "iam_role" {
 }
 
 module "kafka_sg" {
-  source = "../modules/kafka-cluster-securitygroup"
+  source = "../../../modules/kafka-cluster-securitygroup"
 
   my_public_ip = "${var.my_public_ip}"
   vpc_id       = "${var.vpc_id}"
@@ -31,7 +37,7 @@ module "kafka_sg" {
 }
 
 module "kafka_cluster" {
-  source = "../modules/kafka-cluster/"
+  source = "../../../modules/kafka-cluster/"
 
   vpc_id           = "${var.vpc_id}"
   subnet_ids       = ["${var.subnet_id_0}","${var.subnet_id_1}","${var.subnet_id_2}"]  
