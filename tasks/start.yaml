@@ -1,0 +1,35 @@
+---
+- name: Start Zookeeper Container on Hosts
+  docker_container:
+    name: zookeeper
+    image: mbabineau/zookeeper-exhibitor:latest
+    detach: yes
+    published_ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+      - 8181:8181
+    volumes:
+      - zookeeper-vol:/opt/zookeeper/
+    env:
+        HOSTNAME: "{{private_ip}}"
+        S3_BUCKET: "{{s3_bucket_name}}"
+        S3_PREFIX: "zkClusterConfig"
+        AWS_REGION: "{{region}}"
+        ZK_PASSWORD: "{{zk_password}}"
+    restart_policy: unless-stopped
+
+- name: Start Kafka Container on Hosts
+  docker_container:
+    name: kafka
+    image: kafka:image
+    detach: yes
+    published_ports:
+      - 9092:9092
+    volumes:
+      - kafka-vol:/kafka
+    env:
+        KAFKA_ADVERTISED_HOST_NAME: "{{private_ip}}"
+        KAFKA_BROKER_ID: "{{broker_id | quote}}"
+        KAFKA_ZOOKEEPER_CONNECT: "{{zookeeper_connect}}"
+    restart_policy: unless-stopped

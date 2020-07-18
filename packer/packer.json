@@ -29,7 +29,7 @@
     "provisioners": [{
       "type": "ansible",
       "host_alias": "kafka-host",
-      "playbook_file": "../ansible/kafkad.yaml",
+      "playbook_file": "./kafkad.yaml",
       "ansible_env_vars": [ "KAFKA_VERSION={{user `kafka_version`}}", "SCALA_VERSION={{user `scala_version`}}" ]
     }]
 }
