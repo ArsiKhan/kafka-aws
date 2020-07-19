@@ -8,7 +8,6 @@ These instructions will get you a copy of the infrastructure up and running on y
 
 ### Prerequisites
 
-At this moment these manifests can only work in AWS regions which support 3 or more availability zones. Additional pre-reqs are as below:
 * AWS-Cli
 * Packer
 * Ansible-2.8
@@ -65,16 +64,18 @@ Run the following command for creating an AMI with the appropriate version of Ka
 $ packer build -var-file=variables.json packer.json
 ```
 Note the AMI-ID as this would be required in the next step.
-## Provisioning the Cluster
+## Cluster Variables
 
 Open the external_var.yml.
 ```
 $ nano ../ansible/vars/external_vars.yml
 ```
-Add the variables for provisioning the cluster. Replace the ami_id with the one fetched in the previous id.
+### Things to note
+* For using Existing-VPC deployment there must be 3 subnet ids provided in the variables file.
+* For using New-VPC 3 subnet cidr blocks must be provided.
 ```
 region: "us-west-2"
-s3_bucket_name: "exhibitor-bucket-arsalan"
+s3_bucket_name: "exhibitor-bucket"
 environment_name: "kafka-zk"
 my_public_ip: "1.1.1.1/1"
 ami_id: "ami-0f7d1218068eef0e2"
@@ -83,59 +84,26 @@ key_name: "kafka-zookeeper-cluster"
 volume_size: "20"
 ```
 
+## Deployment
+
 Browse to the ansible directory and run the ansible playbook command
 ```
 $ cd ../ansible
 $ ansible-playbook -i dyn_inven terraform.yaml
 ```
 
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+* [Packer](https://www.packer.io/docs) - The EBS image builder
+* [Docker](https://docs.docker.com/) - Kafka and Zookeeper libraries packer
+* [Terraform](https://www.terraform.io/docs/index.html) - Used to Provision the underlying infrastructure on AWS
+* [Ansible](https://docs.ansible.com/) - The main scripts handler and joining all the things together
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+* **Arsalan Ul Haq Khan**
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
-
+* https://www.hashicorp.com/resources/ansible-terraform-better-together/
+* https://medium.com/faun/building-repeatable-infrastructure-with-terraform-and-ansible-on-aws-3f082cd398ad
