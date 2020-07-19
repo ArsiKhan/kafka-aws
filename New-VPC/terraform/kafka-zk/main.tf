@@ -16,7 +16,7 @@ module "vpc" {
 
   tags = {
     Terraform = "true"
-    Environment = "${var.environment}"
+    Environment = var.environment
   }
 }
 

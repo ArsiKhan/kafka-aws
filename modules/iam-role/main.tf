@@ -1,5 +1,5 @@
 resource "aws_iam_role" "kafka_zk_role" {
-  name = "${var.role_name}"
+  name = var.role_name
 
   assume_role_policy = <<EOF
 {
@@ -20,13 +20,13 @@ EOF
 }
 
 resource "aws_iam_instance_profile" "kafka_instance_profile" {
-  name = "${var.instance_profile_name}"
-  role = "${aws_iam_role.kafka_zk_role.name}"
+  name = var.instance_profile_name
+  role = aws_iam_role.kafka_zk_role.name
 }
 
 resource "aws_iam_role_policy" "kafka_policy" {
-  name = "${var.policy_name}"
-  role = "${aws_iam_role.kafka_zk_role.id}"
+  name = var.policy_name
+  role = aws_iam_role.kafka_zk_role.id
 
   policy = <<EOF
 {

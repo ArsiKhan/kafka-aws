@@ -8,7 +8,7 @@ variable "s3_bucket_name" {
 }
 
 variable "environment" {
-    default     = "us-east-1"
+    default     = "DEV"
     description = "Name of Environment to append"
 }
 
@@ -33,7 +33,7 @@ variable "subnet_2" {
 }
 
 variable "my_public_ip" {
-   default     = "117.20.31.76/32"
+   default     = "1.1.1.1/32"
    description = "Public Ip for adding in the security Groups"
 }
 

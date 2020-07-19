@@ -2,7 +2,7 @@
 resource "aws_security_group" "kafka_cluster_sg" {
   name        = "kafka-security-group"
   description = "Allow kafka zookeeper traffic"
-  vpc_id      = "${var.vpc_id}"
+  vpc_id      = var.vpc_id
 
   egress {
     from_port   = 0
@@ -22,7 +22,7 @@ resource "aws_security_group_rule" "allow_kafka_port_peers" {
   protocol  = "tcp"
   self      = true
 
-  security_group_id = "${aws_security_group.kafka_cluster_sg.id}"
+  security_group_id = aws_security_group.kafka_cluster_sg.id
 }
 
 resource "aws_security_group_rule" "allow_zookeeper_port_peers" {
@@ -32,7 +32,7 @@ resource "aws_security_group_rule" "allow_zookeeper_port_peers" {
   protocol  = "tcp"
   self      = true
 
-  security_group_id = "${aws_security_group.kafka_cluster_sg.id}"
+  security_group_id = aws_security_group.kafka_cluster_sg.id
 }
 
 resource "aws_security_group_rule" "allow_exhibitor_peers" {
@@ -42,7 +42,7 @@ resource "aws_security_group_rule" "allow_exhibitor_peers" {
   protocol    = "tcp"
   self        = true
 
-  security_group_id = "${aws_security_group.kafka_cluster_sg.id}"
+  security_group_id = aws_security_group.kafka_cluster_sg.id
 }
 
 resource "aws_security_group_rule" "allow_exhibitor_outside" {
@@ -52,7 +52,7 @@ resource "aws_security_group_rule" "allow_exhibitor_outside" {
   protocol    = "tcp"
   cidr_blocks = ["${var.my_public_ip}"]
 
-  security_group_id = "${aws_security_group.kafka_cluster_sg.id}"
+  security_group_id = aws_security_group.kafka_cluster_sg.id
 }
 
 resource "aws_security_group_rule" "cluster_peers" {
@@ -62,7 +62,7 @@ resource "aws_security_group_rule" "cluster_peers" {
   protocol  = "tcp"
   self      = true
 
-  security_group_id = "${aws_security_group.kafka_cluster_sg.id}"
+  security_group_id = aws_security_group.kafka_cluster_sg.id
 }
 
 resource "aws_security_group_rule" "allow_ssh" {
@@ -72,5 +72,5 @@ resource "aws_security_group_rule" "allow_ssh" {
   protocol    = "tcp"
   cidr_blocks = ["${var.my_public_ip}"]
 
-  security_group_id = "${aws_security_group.kafka_cluster_sg.id}"
+  security_group_id = aws_security_group.kafka_cluster_sg.id
 }

@@ -25,14 +25,14 @@ module "iam_role" {
   role_name             = "${var.environment}-role"
   instance_profile_name = "${var.environment}-profile"
   policy_name           = "${var.environment}-policy"
-  s3_bucket_arn         = "${module.s3_bucket.this_s3_bucket_arn}"
+  s3_bucket_arn         = module.s3_bucket.this_s3_bucket_arn
 }
 
 module "kafka_sg" {
   source = "../../../modules/kafka-cluster-securitygroup"
 
-  my_public_ip = "${var.my_public_ip}"
-  vpc_id       = "${var.vpc_id}"
+  my_public_ip = var.my_public_ip
+  vpc_id       = var.vpc_id
 
 }
 

@@ -1,4 +1,4 @@
-variable "role_name" {
+variable role_name {
   description = "Name of IAM role to create"
 }
 

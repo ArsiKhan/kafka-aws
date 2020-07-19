@@ -20,16 +20,16 @@ variable "subnet_id_2" {
 }
 
 variable "s3_bucket_name" {
-    default = "exhibitor-bucket-arsalan"
+    default = "exhibitor-bucket"
 }
 
 variable "environment" {
-    default     = "us-west-2"
+    default     = "DEV"
     description = "Name of Environment to append"
 }
 
 variable "my_public_ip" {
-   default     = "117.20.31.76/32"
+   default     = "1.1.1.1/32"
    description = "Public Ip for adding in the security Groups"
 }
 

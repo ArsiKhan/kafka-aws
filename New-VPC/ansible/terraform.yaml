@@ -5,16 +5,6 @@
     - ./vars/external_vars.yml
 
   tasks:
-    # - name: Terraform Provision VPC
-    #   terraform:
-    #     project_path: ../terraform/kafka-zk/
-    #     force_init: true
-    #     targets: module.vpc
-    #     state: present
-    #     variables:
-    #       region: "{{region}}"
-    #       environment: "{{environment_name}}"
-
     
     - name: Terraform Deploy Remaining Infrastructure
       terraform:

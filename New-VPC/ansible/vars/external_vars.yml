@@ -1,10 +1,10 @@
 ---
 region: "us-east-1"
 s3_bucket_name: "exhibitor-bucket"
-instance_count: "3"
+instance_count: "1"
 environment_name: "kafka-zk"
 zk_password: "password"
-my_public_ip: "196.246.247.25/32"
+my_public_ip: "1.1.1.1/32"
 ami_id: "ami-0931d12fefe6f20a4"
 instance_type: "t2.medium"
 key_name: "kafka-zk-key"

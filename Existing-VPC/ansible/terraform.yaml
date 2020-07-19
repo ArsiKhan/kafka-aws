@@ -4,8 +4,7 @@
   vars_files:
     - ./vars/external_vars.yml
 
-  tasks:
-    
+  tasks:    
     - name: Terraform Deploy/Destroy Infrastructure
       terraform:
         project_path: ../terraform/kafka-zk/
