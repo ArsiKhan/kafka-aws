@@ -9,9 +9,14 @@
     - name: Terraform Deploy Remaining Infrastructure
       terraform:
         project_path: ../terraform/kafka-zk/
+        force_init: true
         state: present
         variables:
           region: "{{region}}"
+          vpc_cidr: "{{vpc_cidr}}"
+          subnet_0: "{{subnet_0}}"
+          subnet_1: "{{subnet_1}}"
+          subnet_2: "{{subnet_2}}"
           s3_bucket_name: "{{s3_bucket_name}}"
           instance_count: "{{instance_count}}"
           environment: "{{environment_name}}"
