@@ -21,6 +21,10 @@ sudo apt install software-properties-common
 sudo apt-add-repository ppa:ansible/ansible-2.8
 sudo apt-get install ansible=2.8.8-1ppa~bionic
 ```
+Installing Ansible 2.8 using pip
+```
+pip install ansible==2.8.0
+```
 
 ### Underlying Concept
 
