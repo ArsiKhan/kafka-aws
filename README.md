@@ -68,25 +68,26 @@ Run the following command for creating an AMI with the appropriate version of Ka
 $ packer build -var-file=variables.json packer.json
 ```
 Note the AMI-ID as this would be required in the next step.
+
+### Variants
+There are two variants for the infrastructure deployment. One is for **Existing VPC** and the other one for a **New-VPC**. Browse to the specific directory and follow further instructions.
+
+### SSH pem file
+You'll need to create a key pair in AWS. This would be used by the Cluster instances and later by Ansible script to do the config changes. Once the key pair is created download the .pem file and move it to the ansible dir for eg. in case of New-VPC it would be placed at:
+```
+New-VPC/ansible/<key-filename>.pem
+```
+
 ## Cluster Variables
 
-Open the external_var.yml.
+Open the external_var.yml and change the values for your environment.
 ```
-$ nano ../ansible/vars/external_vars.yml
+$ nano ansible/vars/external_vars.yml
 ```
 ### Things to note
-* For using Existing-VPC deployment there must be 3 subnet ids provided in the variables file.
-* For using New-VPC 3 subnet cidr blocks must be provided.
-```
-region: "us-west-2"
-s3_bucket_name: "exhibitor-bucket"
-environment_name: "kafka-zk"
-my_public_ip: "1.1.1.1/1"
-ami_id: "ami-0f7d1218068eef0e2"
-instance_type: "t2.medium"
-key_name: "kafka-zookeeper-cluster"
-volume_size: "20"
-```
+* For using Existing-VPC deployment there must be 1 VPC and id 3 subnet ids in the variables file.
+
+* For using New-VPC 1 VPC cidr block and 3 subnet cidr blocks must be provided.
 
 ## Deployment
 
@@ -94,6 +95,12 @@ Browse to the ansible directory and run the ansible playbook command
 ```
 $ cd ../ansible
 $ ansible-playbook -i dyn_inven terraform.yaml
+```
+
+## Testing
+After ansible playbook is done deploying and configuring the resources, open the exhibitor console for anyone of the deployed servers by browsing to the following endpoint:
+```
+<public-ip>:8181
 ```
 
 ## Built With
