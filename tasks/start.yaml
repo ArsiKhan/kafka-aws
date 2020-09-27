@@ -1,4 +1,13 @@
 ---
+
+- name: Wait for SSH to become available
+  wait_for:
+    port: 22
+    timeout: 600
+
+- name: Gather Facts
+  setup:
+
 - name: Start Zookeeper Container on Hosts
   docker_container:
     name: zookeeper

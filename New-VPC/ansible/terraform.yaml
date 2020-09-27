@@ -6,7 +6,7 @@
 
   tasks:
     
-    - name: Terraform Deploy Remaining Infrastructure
+    - name: Terraform Deploy/Destroy Infrastructure
       terraform:
         project_path: ../terraform/kafka-zk/
         force_init: true
@@ -38,27 +38,6 @@
     - set_fact:
         zookeeper_connect: "{{private_ips | map('regex_replace', '$', ':2181') | list}}"
 
-        
-    - name: Add the first line of our inventory
-      lineinfile:
-         path: dyn_inven
-         insertbefore: BOF
-         line: "[kafka-nodes]"
-
-    - name: Copy contents to local
-      blockinfile:
-       path: dyn_inven
-       state: present
-       insertafter: 'Kafka-Instance*'
-       block: |
-        kafka-{{my_idx}} ansible_host={{item[0]}} private_ip={{item[1]}} broker_id={{my_idx}}
-       marker: "# {mark} Kafka-Instance{{my_idx}}"
-      with_together:
-         - "{{public_ips}}"
-         - "{{private_ips}}"
-      loop_control:
-           index_var: my_idx
-
     - name: Additional Info in the inventory
       blockinfile:
           path: dyn_inven
@@ -81,13 +60,9 @@
     - name: Refresh inventory for new hosts
       meta: refresh_inventory
 
-    - name: sleep for 300 seconds for ssh to become available and continue with play
-      wait_for:
-        timeout: 300
-        
-
 
 - hosts: [kafka-nodes]
+  gather_facts: no
   vars_files:
     - ./vars/external_vars.yml
 
