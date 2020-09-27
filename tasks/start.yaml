@@ -1,9 +1,7 @@
 ---
 
 - name: Wait for SSH to become available
-  wait_for:
-    port: 22
-    timeout: 600
+  wait_for_connection:
 
 - name: Gather Facts
   setup:
