@@ -26,41 +26,11 @@
           root_volume_size: "{{root_volume_size}}"
       register: output_result
 
-    - debug:
-        msg: "{{output_result.stdout}}"
-    
-    - set_fact:
-        private_ips: "{{output_result.outputs.private_ips.value}}"
-        public_ips: "{{output_result.outputs.public_ips.value}}"
-        real_bucket_name: "{{output_result.outputs.exhibitor_s3_bucket.value}}"
-  
-    - set_fact:
-        zookeeper_connect: "{{private_ips | map('regex_replace', '$', ':2181') | list}}"
+    - include_tasks:  ../../tasks/deploy.yaml
 
-    - name: Additional Info in the inventory
-      blockinfile:
-          path: dyn_inven
-          marker: "# {mark} ANSIBLE MANAGED BLOCK FOR KAFKA-NODES VARIABLES"
-          state: present
-          block: |
-            [kafka-nodes:vars]
-            ansible_ssh_user=ubuntu
-            ansible_ssh_private_key_file=./kafka_zk_clusterkey.pem
-            ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-            real_bucket_name={{real_bucket_name}} 
-            zookeeper_connect=
-            
-    - name: Adding Zookeeper_Connect Info in the Inventory
-      lineinfile:
-          dest: dyn_inven
-          regexp: '^zookeeper_connect='
-          line: "zookeeper_connect={{zookeeper_connect | join(',')}}"
 
-    - name: Refresh inventory for new hosts
-      meta: refresh_inventory
-    
- 
 - hosts: [kafka-nodes]
+  gather_facts: no
   vars_files:
     - ./vars/external_vars.yml
 
