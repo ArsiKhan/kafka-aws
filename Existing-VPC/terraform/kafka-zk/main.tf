@@ -6,7 +6,7 @@ resource "random_string" "random" {
 
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
-  
+  version = "~> v1.9.0"
   bucket = "${var.s3_bucket_name}-${random_string.random.result}"
   acl    = "private"
   region = var.region
