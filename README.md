@@ -77,7 +77,9 @@ You'll need to create a key pair in AWS. This would be used by the Cluster insta
 ```
 New-VPC/ansible/<key-filename>.pem
 ```
+Remember to change the permission of the key file !
 
+In the subsequent steps add the name of the key to variables in external_vars.yml
 ## Cluster Variables
 
 Open the external_var.yml and change the values for your environment.
