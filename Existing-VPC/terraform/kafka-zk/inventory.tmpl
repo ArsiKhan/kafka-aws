@@ -1,0 +1,4 @@
+[kafka-nodes]
+%{for index, instance in ansible_host ~}
+kafka-${index} ansible_host=${ansible_host[index]} private_ip=${private_ip[index]} broker_id=${index}
+%{ endfor ~}
