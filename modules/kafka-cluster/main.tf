@@ -17,9 +17,3 @@ resource "aws_instance" "kafka_zk_cluster" {
       volume_size = var.volume_size
   }   
 }
-
-resource "aws_eip" "elastic_ips" {
-    vpc                 = true
-    count               = var.instance_count
-    instance            = aws_instance.kafka_zk_cluster[count.index].id
-}

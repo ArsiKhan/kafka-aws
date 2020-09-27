@@ -1,7 +1,7 @@
 output "public_ips" {
-    value = aws_eip.elastic_ips[*].public_ip
+    value = aws_instance.kafka_zk_cluster[*].public_ip
 }
 
 output "private_ips" {
-    value = aws_eip.elastic_ips[*].private_ip
+    value = aws_instance.kafka_zk_cluster[*].private_ip
 }
